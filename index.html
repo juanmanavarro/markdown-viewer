@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Peeker</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+</head>
+
+<body>
+    <div id="content">
+        <h1>Markdown Viewer</h1>
+        <h2>Usage</h2>
+        <p>Visit <span class="url"></span>?[url of the website you want to view], replacing [url of the website you want to view] with the exact address of the page that contains the markdown. And you're set!</p>
+        <h2>Example</h2>
+        <p><a href="/?https://gist.githubusercontent.com/juanmanavarro/8dab65206915ab64e28f78048c4c14cc/raw/e8f3b77ce1f9f884ed255e3b2bd4111eb554bb2d/CV-en.md"><span class="url"></span>?https://gist.githubusercontent.com/juanmanavarro/8dab65206915ab64e28f78048c4c14cc/raw/e8f3b77ce1f9f884ed255e3b2bd4111eb554bb2d/CV-en.md</a>
+        </p>
+    </div>
+
+    <footer>
+        <p><a class="url" href="">Markdown Viewer</a> | Created by <a href="https://juanmanavarro.com">Juanma Navarro</a></p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script type="module">
+        window.addEventListener('DOMContentLoaded', async () => {
+            document.querySelectorAll('.url').forEach(e => {
+                if (!e.textContent) e.textContent = window.location.href;
+                e.href = window.location.origin;
+            });
+
+            if (!window.location.search) {
+                return;
+            }
+
+            const contentElement = document.getElementById('content');
+            try {
+                const { data } = await axios.get(window.location.search.slice(1))
+                contentElement.innerHTML = marked.parse(data);
+            } catch (error) {
+                contentElement.innerHTML = error.message;
+            }
+        });
+    </script>
+</body>
+
+</html>
