@@ -22,14 +22,20 @@
     </div>
 
     <footer>
-        <p><a class="url" href="">Markdown Viewer</a> by <a href="https://juanmanavarro.com">Juanma Navarro</a></p>
+        <p><a class="url" href="">Markdown Viewer</a> by <a href="https://juanmanavar.ro">Juanma Navarro</a></p>
         <p><iframe src="https://ghbtns.com/github-btn.html?user=juanmanavarro&repo=markdown-viewer&type=star&count=true&size=small"
             frameborder="0" scrolling="0" width="100" height="30" title="GitHub"></iframe></p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js" integrity="sha512-H+rglffZ6f5gF7UJgvH4Naa+fGCgjrHKMgoFOGmcPTRwR6oILo5R+gtzNrpDp7iMV3udbymBVjkeZGNz1Em4rQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script type="module">
+        const { jsPDF } = window.jspdf;
+        console.log(window);
+
         window.addEventListener('DOMContentLoaded', async () => {
             document.querySelectorAll('.url').forEach(e => {
                 if (!e.textContent) e.textContent = window.location.href;
@@ -42,8 +48,16 @@
 
             const contentElement = document.getElementById('content');
             try {
-                const { data } = await axios.get(window.location.search.slice(1))
-                contentElement.innerHTML = marked.parse(data);
+                const { data } = await axios.get(window.location.search.slice(1));
+                contentElement.innerHTML = '<button id="download">Download as PDF</button>';
+                contentElement.innerHTML += marked.parse(data);
+
+                document.getElementById('download').addEventListener('click', () => {
+                    const doc = jsPDF();
+                    console.log(marked.parse(data));
+                    doc.html(marked.parse(data));
+                    doc.save('markdown.pdf');
+                });
             } catch (error) {
                 contentElement.innerHTML = error.message;
             }
